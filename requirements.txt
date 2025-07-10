@@ -1,2 +1,0 @@
-# ComfyUI Folder List Plugin requirements
-comfy>=0.1.0  # 确保安装ComfyUI核心库
