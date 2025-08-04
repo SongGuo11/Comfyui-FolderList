@@ -39,3 +39,49 @@ class FolderList:
             return (result,)
         except Exception as e:
             return (f"错误：{str(e)}",)
+
+
+class FileListNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "folder_path": ("STRING", {"default": ""}),
+            },
+            "optional": {
+                "show_count": ("BOOLEAN", {"default": False}),
+                "start_index": ("INT", {"default": 0, "min": 0, "max": 9999}),
+                "file_formats": ("STRING", {"default": ""})
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "list_files"
+    CATEGORY = "list/IO"
+
+    def list_files(self, folder_path, show_count=False, start_index=0, file_formats=""):
+        if not os.path.exists(folder_path):
+            raise ValueError(f"Folder path '{folder_path}' does not exist.")
+            
+        files = os.listdir(folder_path)
+        
+        # Filter files by format if specified
+        if file_formats:
+            formats = [f.strip().lower() for f in file_formats.split(",") if f.strip()]
+            if formats:
+                files = [f for f in files if any(f.lower().endswith(ext) for ext in formats)]
+        
+        # Sort files for consistent output
+        files.sort()
+        
+        # Apply start index
+        files = files[start_index:]
+        
+        # Join files with "、"
+        result = "、".join(files)
+        
+        # Add count if requested
+        if show_count:
+            result += f" (Total: {len(files)})"
+            
+        return (result,)
